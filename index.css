@@ -236,6 +236,8 @@ Node styles
 .node .label
 {
 	color: #ddd;
+	font-size: 17px;
+	font-weight: 700;
 }
 
 .node .label.Text
@@ -265,7 +267,7 @@ Node styles
 
 .node .label.Image
 {
-	color: #4c75de;
+	color: #233b9a;
 }
 
 .node .label.System

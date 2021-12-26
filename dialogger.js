@@ -426,7 +426,7 @@ joint.shapes.dialogue.Action = joint.shapes.devs.Model.extend(
 		defaults: joint.util.deepSupplement
 		(
 			{
-				size: { width: 250, height: 135 },
+				size: { width: 250, height: 175 },
 				type: 'dialogue.Action',
 				inPorts: ['input'],
 				outPorts: ['output'],
