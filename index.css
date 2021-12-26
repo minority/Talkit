@@ -219,9 +219,19 @@ Node styles
 	box-sizing: border-box;
 	background-color: #456;
 	color: #fff;
-    
-
-
+}
+.node select, .node-choice select
+{
+	/* Enable interacting with inputs only. */
+	pointer-events: auto;
+	border: none;
+	box-sizing: border-box;
+	background-color: #456;
+	color: #fff;
+	width: 50%;
+	padding: 4px;
+	margin-right: 25px;
+	float:right;
 }
 .node .label
 {
@@ -243,9 +253,24 @@ Node styles
 	color: #dc5;
 }
 
+.node .label.Action
+{
+	color: #ff3f3f;
+}
+
 .node .label.Branch
 {
 	color: #ea6;
+}
+
+.node .label.Image
+{
+	color: #4c75de;
+}
+
+.node .label.System
+{
+	color: #28434f;
 }
 
 button
