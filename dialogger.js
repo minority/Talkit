@@ -40,32 +40,43 @@ var allowableConnections =
 	['dialogue.Text', 'dialogue.Set'],
 	['dialogue.Text', 'dialogue.Branch'],
 	['dialogue.Text', 'dialogue.System'],
+	['dialogue.Text', 'dialogue.Image'],
 	['dialogue.System', 'dialogue.Text'],
 	['dialogue.System', 'dialogue.Node'],
 	['dialogue.System', 'dialogue.Choice'],
 	['dialogue.System', 'dialogue.Set'],
 	['dialogue.System', 'dialogue.Branch'],
+	['dialogue.System', 'dialogue.Image'],
+	['dialogue.Image', 'dialogue.Text'],
+	['dialogue.Image', 'dialogue.Node'],
+	['dialogue.Image', 'dialogue.Choice'],
+	['dialogue.Image', 'dialogue.Set'],
+	['dialogue.Image', 'dialogue.Branch'],
 	['dialogue.Node', 'dialogue.Text'],
 	['dialogue.Node', 'dialogue.Node'],
 	['dialogue.Node', 'dialogue.Choice'],
 	['dialogue.Node', 'dialogue.Set'],
 	['dialogue.Node', 'dialogue.Branch'],
 	['dialogue.Node', 'dialogue.System'],
+	['dialogue.Node', 'dialogue.Image'],
 	['dialogue.Choice', 'dialogue.Text'],
 	['dialogue.Choice', 'dialogue.Node'],
 	['dialogue.Choice', 'dialogue.Set'],
 	['dialogue.Choice', 'dialogue.Branch'],
 	['dialogue.Choice', 'dialogue.System'],
+	['dialogue.Choice', 'dialogue.Image'],
 	['dialogue.Set', 'dialogue.Text'],
 	['dialogue.Set', 'dialogue.Node'],
 	['dialogue.Set', 'dialogue.Set'],
 	['dialogue.Set', 'dialogue.Branch'],
 	['dialogue.Set', 'dialogue.System'],
+	['dialogue.Set', 'dialogue.Image'],
 	['dialogue.Branch', 'dialogue.Text'],
 	['dialogue.Branch', 'dialogue.Node'],
 	['dialogue.Branch', 'dialogue.Set'],
 	['dialogue.Branch', 'dialogue.Branch'],
 	['dialogue.Branch', 'dialogue.System'],
+	['dialogue.Branch', 'dialogue.Image'],
 ];
 
 function validateConnection(cellViewS, magnetS, cellViewT, magnetT, end, linkView)
@@ -417,6 +428,90 @@ joint.shapes.dialogue.SystemView = joint.shapes.devs.ModelView.extend(
 	});
 
 
+joint.shapes.dialogue.Image = joint.shapes.devs.Model.extend(
+	{
+		defaults: joint.util.deepSupplement
+		(
+			{
+				size: { width: 300, height: 50 },
+				type: 'dialogue.Image',
+				inPorts: ['input'],
+				outPorts: ['output'],
+				name: '',
+			},
+			joint.shapes.dialogue.Base.prototype.defaults
+		),
+	});
+joint.shapes.dialogue.ImageView = joint.shapes.dialogue.ImageView;
+
+joint.shapes.dialogue.ImageView = joint.shapes.devs.ModelView.extend(
+	{
+		template:
+			[
+				'<div class="node">',
+				'<span class="label"> </span>',
+				'<button class="delete">x</button>',
+				'<input type="name" class="name" placeholder="Name" />',
+				'</div>',
+
+			].join(''),
+
+		initialize: function () {
+
+
+			_.bindAll(this, 'updateBox');
+			joint.shapes.devs.ModelView.prototype.initialize.apply(this, arguments);
+
+			this.$box = $(_.template(this.template)());
+			// Prevent paper from handling pointerdown.
+			this.$box.find('input').on('mousedown click', function (evt) { evt.stopPropagation(); });
+			this.$box.find('idd').on('mousedown click', function (evt) { evt.stopPropagation(); });
+
+			// This is an example of reacting on the input change and storing the input data in the cell model.
+			this.$box.find('input.name').on('change', _.bind(function (evt) {
+				this.model.set('name', $(evt.target).val());
+			}, this));
+
+
+			this.$box.find('.delete').on('click', _.bind(this.model.remove, this.model));
+			// Update the box position whenever the underlying model changes.
+			this.model.on('change', this.updateBox, this);
+			// Remove the box when the model gets removed from the graph.
+			this.model.on('remove', this.removeBox, this);
+
+			this.updateBox();
+		},
+
+		render: function () {
+			joint.shapes.devs.ModelView.prototype.render.apply(this, arguments);
+			this.paper.$el.prepend(this.$box);
+			this.updateBox();
+			return this;
+		},
+
+		updateBox: function () {
+			// Set the position and dimension of the box so that it covers the JointJS element.
+			var bbox = this.model.getBBox();
+
+			// Example of updating the HTML with a data stored in the cell model.
+			var nameField = this.$box.find('input.name');
+			if (!nameField.is(':focus'))
+				nameField.val(this.model.get('name'));
+
+			var label = this.$box.find('.label');
+			var type = this.model.get('type').slice('dialogue.'.length);
+			label.text(type);
+			label.attr('class', 'label ' + type);
+
+			this.$box.css({ width: bbox.width, height: bbox.height, left: bbox.x, top: bbox.y, transform: 'rotate(' + (this.model.get('angle') || 0) + 'deg)' });
+		},
+
+		removeBox: function (evt) {
+			this.$box.remove();
+		},
+	});
+
+
 joint.shapes.dialogue.Node = joint.shapes.devs.Model.extend(
 {
 	defaults: joint.util.deepSupplement
@@ -668,6 +763,11 @@ function gameData()
 			}
 
 			else if (node.type === 'System') {
+				node.name = cell.name;
+				node.next = null;
+			}
+
+			else if (node.type === 'Image') {
 				node.name = cell.name;
 				node.next = null;
 			}
@@ -1068,6 +1168,7 @@ $('#paper').contextmenu(
 		{ text: 'Set', alias: '1-4', action: add(joint.shapes.dialogue.Set) },
 		{ text: 'Node', alias: '1-5', action: add(joint.shapes.dialogue.Node) },
 		{ text: 'System', alias: '1-6', action: add(joint.shapes.dialogue.System) },
+		{ text: 'Image', alias: '1-7', action: add(joint.shapes.dialogue.Image) },
 		{ type: 'splitLine' },
 		{ text: 'Save', alias: '2-1', action: save },
 		{ text: 'Load', alias: '2-2', action: load },
