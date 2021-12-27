@@ -1017,7 +1017,7 @@ function gameData()
 					}
 					source.branches[value] = target ? target.id : null;
 				}
-				else if ((source.type === 'Text' || source.type === 'Node') && target && target.type === 'Choice')
+				else if ((source.type === 'Text' || source.type === 'Node' || source.type === 'System' || source.type === 'Image' || source.type === 'Action' || source.type === 'Set' || source.type === 'Branch') && target && target.type === 'Choice')
 				{
 					if (!source.choices)
 					{
@@ -1026,7 +1026,7 @@ function gameData()
 					}
 					source.choices.push(target.id);
 				}
-				else if ((source.type === 'Text' || source.type === 'Node') && target && target.type === 'Action')
+				else if ((source.type === 'Text' || source.type === 'Node' || source.type === 'System' || source.type === 'Image' || source.type === 'Choice' || source.type === 'Set' || source.type === 'Branch') && target && target.type === 'Action' )
 				{
 					if (!source.choices)
 					{
@@ -1035,6 +1035,7 @@ function gameData()
 					}
 					source.choices.push(target.id);
 				}
+				
 				else
 					source.next = target ? target.id : null;
 			}
