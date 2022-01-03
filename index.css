@@ -147,6 +147,16 @@ Node styles
 	margin: 5px 25px 5px 0 !important;
 }
 
+.choice-node input[type="delay"]
+{
+	margin: 5px 25px 5px 0 !important;
+}
+
+.node input[type="delay"]
+{
+	margin: 5px 25px 5px 0 !important;
+}
+
 .choice-node input[type="name"]
 {
 	margin: 5px 25px 5px 0 !important;
@@ -176,7 +186,20 @@ Node styles
 	padding: 4px;
     margin-right: 10px;
     float:right;
+}
 
+.node input[type="delay"]
+{
+	/* Enable interacting with inputs only. */
+	pointer-events: auto;
+	border: none;
+	box-sizing: border-box;
+	background-color: #456;
+	color: #fff;
+	width: 50%;
+	padding: 4px;
+	margin-right: 10px;
+	float:right;
 }
 
 .node input[type="name"]
@@ -191,9 +214,7 @@ Node styles
 	padding: 4px;
 	margin-right: 10px;
 	float:right;
-
 }
-
 
 .node input[type="choice"]
 {

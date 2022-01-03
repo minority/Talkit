@@ -172,9 +172,10 @@ joint.shapes.dialogue.Base = joint.shapes.devs.Model.extend(
 	(
 		{
 			type: 'dialogue.Base',
-			size: { width: 250, height: 185 },
+			size: { width: 250, height: 205 },
 			name: '',
 			avatar: 'Idle',
+			delay: 0,
 			attrs:
 			{
 				rect: { stroke: 'none', 'fill-opacity': 0 },
@@ -196,6 +197,7 @@ joint.shapes.dialogue.BaseView = joint.shapes.devs.ModelView.extend(
         '<input type="actor" class="actor" placeholder="Actor" />',
 		avatarSelectHtml,
         '<p> <textarea type="text" class="name" rows="4" cols="27" placeholder="Speech"></textarea></p>',
+		'<p>Delay: <input type="delay" class="delay" placeholder="Delay" /></p>',
         '</div>',
 	].join(''),
 
@@ -226,6 +228,11 @@ joint.shapes.dialogue.BaseView = joint.shapes.devs.ModelView.extend(
 	    // This is an example of reacting on the input change and storing the input data in the cell model.
 		this.$box.find('input.actor').on('change', _.bind(function (evt) {
 		    this.model.set('actor', $(evt.target).val());
+		}, this));
+		
+		// This is an example of reacting on the input change and storing the input data in the cell model.
+		this.$box.find('input.delay').on('change', _.bind(function (evt) {
+			this.model.set('delay', $(evt.target).val());
 		}, this));
 
 		// This is an example of reacting on the input change and storing the input data in the cell model.
@@ -271,6 +278,11 @@ joint.shapes.dialogue.BaseView = joint.shapes.devs.ModelView.extend(
 		if (!actorField.is(':focus'))
 		    actorField.val(this.model.get('actor'));
 
+		// Example of updating the HTML with a data stored in the cell model.
+		var delayField = this.$box.find('input.delay');
+		if (!delayField.is(':focus'))
+			delayField.val(this.model.get('delay'));
+
 	    // Example of updating the HTML with a data stored in the cell model.
 		var textAreaField = this.$box.find('textarea.name');
 		if (!textAreaField.is(':focus'))
@@ -299,7 +311,7 @@ joint.shapes.dialogue.Choice = joint.shapes.devs.Model.extend(
 		defaults: joint.util.deepSupplement
 		(
 			{
-				size: { width: 250, height: 175 },
+				size: { width: 250, height: 225 },
 				type: 'dialogue.Choice',
 				inPorts: ['input'],
 				outPorts: ['output'],
@@ -307,6 +319,7 @@ joint.shapes.dialogue.Choice = joint.shapes.devs.Model.extend(
 				title: '',
 				name: '',
 				avatar: 'Idle',
+				delay: 0,
 				attrs:
 					{
 
@@ -329,6 +342,7 @@ joint.shapes.dialogue.ChoiceView = joint.shapes.devs.ModelView.extend(
 		avatarSelectHtml,
 		'<input type="actor" class="actor" placeholder="Actor" />',
         '<p> <textarea type="text" class="name" rows="4" cols="27" placeholder="Speech"></textarea></p>',
+		'<p>Delay: <input type="delay" class="delay" placeholder="Delay" /></p>',
 		'</div>',
         		
 	].join(''),
@@ -351,6 +365,11 @@ joint.shapes.dialogue.ChoiceView = joint.shapes.devs.ModelView.extend(
         this.$box.find('textarea.name').on('change', _.bind(function (evt) {
             this.model.set('name', $(evt.target).val());
         }, this));
+
+		// This is an example of reacting on the input change and storing the input data in the cell model.
+		this.$box.find('input.delay').on('change', _.bind(function (evt) {
+			this.model.set('delay', $(evt.target).val());
+		}, this));
 
 		// This is an example of reacting on the input change and storing the input data in the cell model.
 		this.$box.find('input.actor').on('change', _.bind(function (evt) {
@@ -406,7 +425,11 @@ joint.shapes.dialogue.ChoiceView = joint.shapes.devs.ModelView.extend(
 		if (!avatarField.is(':focus'))
 			avatarField.val(this.model.get('avatar'));
 
-
+		// Example of updating the HTML with a data stored in the cell model.
+		var delayField = this.$box.find('input.delay');
+		if (!delayField.is(':focus'))
+			delayField.val(this.model.get('delay'));
+		
         var label = this.$box.find('.label');
         var type = this.model.get('type').slice('dialogue.'.length);
         label.text(type);
@@ -426,13 +449,14 @@ joint.shapes.dialogue.Action = joint.shapes.devs.Model.extend(
 		defaults: joint.util.deepSupplement
 		(
 			{
-				size: { width: 250, height: 175 },
+				size: { width: 250, height: 225 },
 				type: 'dialogue.Action',
 				inPorts: ['input'],
 				outPorts: ['output'],
 				actor: '',
 				title: '',
 				name: '',
+				delay: 0,
 				avatar: 'Idle',
 				attrs:
 					{
@@ -456,6 +480,7 @@ joint.shapes.dialogue.ActionView = joint.shapes.devs.ModelView.extend(
 				avatarSelectHtml,
 				'<input type="actor" class="actor" placeholder="Actor" />',
 				'<p> <textarea type="text" class="name" rows="4" cols="27" placeholder="Speech"></textarea></p>',
+				'<p>Delay: <input type="delay" class="delay" placeholder="Delay" /></p>',
 				'</div>',
 
 			].join(''),
@@ -477,6 +502,11 @@ joint.shapes.dialogue.ActionView = joint.shapes.devs.ModelView.extend(
 			// This is an example of reacting on the input change and storing the input data in the cell model.
 			this.$box.find('textarea.name').on('change', _.bind(function (evt) {
 				this.model.set('name', $(evt.target).val());
+			}, this));
+
+			// This is an example of reacting on the input change and storing the input data in the cell model.
+			this.$box.find('input.delay').on('change', _.bind(function (evt) {
+				this.model.set('delay', $(evt.target).val());
 			}, this));
 
 			// This is an example of reacting on the input change and storing the input data in the cell model.
@@ -533,6 +563,11 @@ joint.shapes.dialogue.ActionView = joint.shapes.devs.ModelView.extend(
 			if (!avatarField.is(':focus'))
 				avatarField.val(this.model.get('avatar'));
 
+			// Example of updating the HTML with a data stored in the cell model.
+			var delayField = this.$box.find('input.delay');
+			if (!delayField.is(':focus'))
+				delayField.val(this.model.get('delay'));
+
 			var label = this.$box.find('.label');
 			var type = this.model.get('type').slice('dialogue.'.length);
 			label.text(type);
@@ -552,11 +587,12 @@ joint.shapes.dialogue.System = joint.shapes.devs.Model.extend(
 		defaults: joint.util.deepSupplement
 		(
 			{
-				size: { width: 250, height: 135 },
+				size: { width: 250, height: 155 },
 				type: 'dialogue.System',
 				inPorts: ['input'],
 				outPorts: ['output'],
 				name: '',
+				delay: 0,
 				attrs:
 					{
 
@@ -576,6 +612,7 @@ joint.shapes.dialogue.SystemView = joint.shapes.devs.ModelView.extend(
 				'<span class="label"> </span>',
 				'<button class="delete">x</button>',
 				'<p> <textarea type="text" class="name" rows="4" cols="27" placeholder="Speech"></textarea></p>',
+				'<p>Delay: <input type="delay" class="delay" placeholder="Delay" /></p>',
 				'</div>',
 
 			].join(''),
@@ -590,10 +627,16 @@ joint.shapes.dialogue.SystemView = joint.shapes.devs.ModelView.extend(
 			// Prevent paper from handling pointerdown.
 			this.$box.find('textarea').on('mousedown click', function (evt) { evt.stopPropagation(); });
 			this.$box.find('idd').on('mousedown click', function (evt) { evt.stopPropagation(); });
-
+			this.$box.find('input').on('mousedown click', function (evt) { evt.stopPropagation(); });
+			
 			// This is an example of reacting on the input change and storing the input data in the cell model.
 			this.$box.find('textarea.name').on('change', _.bind(function (evt) {
 				this.model.set('name', $(evt.target).val());
+			}, this));
+
+			// This is an example of reacting on the input change and storing the input data in the cell model.
+			this.$box.find('input.delay').on('change', _.bind(function (evt) {
+				this.model.set('delay', $(evt.target).val());
 			}, this));
 
 			this.$box.find('.delete').on('click', _.bind(this.model.remove, this.model));
@@ -620,6 +663,11 @@ joint.shapes.dialogue.SystemView = joint.shapes.devs.ModelView.extend(
 			if (!nameField.is(':focus'))
 				nameField.val(this.model.get('name'));
 
+			// Example of updating the HTML with a data stored in the cell model.
+			var delayField = this.$box.find('input.delay');
+			if (!delayField.is(':focus'))
+				delayField.val(this.model.get('delay'));
+
 			var label = this.$box.find('.label');
 			var type = this.model.get('type').slice('dialogue.'.length);
 			label.text(type);
@@ -640,11 +688,12 @@ joint.shapes.dialogue.Image = joint.shapes.devs.Model.extend(
 		defaults: joint.util.deepSupplement
 		(
 			{
-				size: { width: 300, height: 50 },
+				size: { width: 300, height: 80 },
 				type: 'dialogue.Image',
 				inPorts: ['input'],
 				outPorts: ['output'],
 				name: '',
+				delay: 0,
 				attrs:
 					{
 
@@ -664,6 +713,7 @@ joint.shapes.dialogue.ImageView = joint.shapes.devs.ModelView.extend(
 				'<span class="label"> </span>',
 				'<button class="delete">x</button>',
 				'<input type="name" class="name" placeholder="Name" />',
+				'<p>Delay: <input type="delay" class="delay" placeholder="Delay" /></p>',
 				'</div>',
 
 			].join(''),
@@ -684,6 +734,10 @@ joint.shapes.dialogue.ImageView = joint.shapes.devs.ModelView.extend(
 				this.model.set('name', $(evt.target).val());
 			}, this));
 
+			// This is an example of reacting on the input change and storing the input data in the cell model.
+			this.$box.find('input.delay').on('change', _.bind(function (evt) {
+				this.model.set('delay', $(evt.target).val());
+			}, this));
 
 			this.$box.find('.delete').on('click', _.bind(this.model.remove, this.model));
 			// Update the box position whenever the underlying model changes.
@@ -709,6 +763,11 @@ joint.shapes.dialogue.ImageView = joint.shapes.devs.ModelView.extend(
 			var nameField = this.$box.find('input.name');
 			if (!nameField.is(':focus'))
 				nameField.val(this.model.get('name'));
+
+			// Example of updating the HTML with a data stored in the cell model.
+			var delayField = this.$box.find('input.delay');
+			if (!delayField.is(':focus'))
+				delayField.val(this.model.get('delay'));
 
 			var label = this.$box.find('.label');
 			var type = this.model.get('type').slice('dialogue.'.length);
@@ -751,6 +810,7 @@ joint.shapes.dialogue.Text = joint.shapes.devs.Model.extend(
 			inPorts: ['input'],
 			outPorts: ['output'],
 			actor: '',
+			delay: 0,
 			textarea: 'Start writing',
 			attrs:
 			{
@@ -938,6 +998,7 @@ function gameData()
 				id: cell.id,
 				actor: cell.actor,
                 title: cell.title,
+				delay: cell.delay,
 			};
 			
 			if (node.type === 'Branch')
