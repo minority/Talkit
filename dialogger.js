@@ -37,6 +37,12 @@ var avatarSelectHtml = '<p>Avatar: <select name="avatar">' +
 	'<option>Smile</option>' +
 	'</select><p>';
 
+var variableTypeHtml = '<p>Type: <select name="variableType">' +
+	'<option>bool</option>' +
+	'<option>int</option>' +
+	'<option>string</option>' +
+	'</select><p>';	
+
 var allowableConnections =
 [
 	['dialogue.Text', 'dialogue.Text'],
@@ -829,7 +835,8 @@ joint.shapes.dialogue.Branch = joint.shapes.devs.Model.extend(
 	(
 		{
 			type: 'dialogue.Branch',
-			size: { width: 200, height: 100, },
+			variableType: "bool",
+			size: { width: 200, height: 150, },
 			inPorts: ['input'],
 			outPorts: ['output0'],
 			values: [],
@@ -846,6 +853,7 @@ joint.shapes.dialogue.BranchView = joint.shapes.dialogue.BaseView.extend(
 		'<button class="delete">x</button>',
 		'<button class="add">+</button>',
 		'<button class="remove">-</button>',
+		variableTypeHtml,
 		'<input type="text" class="name" placeholder="Variable" />',
 		'<input type="text" value="Default" readonly/>',
 		'</div>',
@@ -856,6 +864,13 @@ joint.shapes.dialogue.BranchView = joint.shapes.dialogue.BaseView.extend(
 		joint.shapes.dialogue.BaseView.prototype.initialize.apply(this, arguments);
 		this.$box.find('.add').on('click', _.bind(this.addPort, this));
 		this.$box.find('.remove').on('click', _.bind(this.removePort, this));
+		// Prevent paper from handling pointerdown.
+		this.$box.find('select').on('mousedown click', function (evt) { evt.stopPropagation(); });
+
+		// This is an example of reacting on the input change and storing the input data in the cell model.
+		this.$box.find('select[name="variableType"]').on('change', _.bind(function (evt) {
+			this.model.set('variableType', $(evt.target).val());
+		}, this));
 	},
 
 	removePort: function()
@@ -908,6 +923,11 @@ joint.shapes.dialogue.BranchView = joint.shapes.dialogue.BaseView.extend(
 			}, this));
 		}
 
+		// Example of updating the HTML with a data stored in the cell model.
+		var variableTypeField = this.$box.find('select[name="variableType"]');
+		if (!variableTypeField.is(':focus'))
+			variableTypeField.val(this.model.get('variableType'));
+
 		// Remove value fields if necessary
 		for (var i = values.length; i < valueFields.length; i++)
 			$(valueFields[i]).remove();
@@ -926,7 +946,7 @@ joint.shapes.dialogue.BranchView = joint.shapes.dialogue.BaseView.extend(
 	{
 		var textField = this.$box.find('input.name');
 		var height = textField.outerHeight(true);
-		this.model.set('size', { width: 200, height: 100 + Math.max(0, (this.model.get('outPorts').length - 1) * height) });
+		this.model.set('size', { width: 200, height: 150 + Math.max(0, (this.model.get('outPorts').length - 1) * height) });
 	},
 });
 
@@ -939,8 +959,9 @@ joint.shapes.dialogue.Set = joint.shapes.devs.Model.extend(
 		    type: 'dialogue.Set',
 		    inPorts: ['input'],
 		    outPorts: ['output'],
-		    size: { width: 200, height: 100, },
+		    size: { width: 200, height: 150, },
 		    value: '',
+			variableType: "bool",
 			attrs:
 				{
 
@@ -957,6 +978,7 @@ joint.shapes.dialogue.SetView = joint.shapes.dialogue.BaseView.extend(
 		'<div class="node">',
 		'<span class="label"></span>',
 		'<button class="delete">x</button>',
+		variableTypeHtml,
 		'<input type="text" class="name" placeholder="Variable" />',
 		'<input type="text" class="value" placeholder="Value" />',
 		'</div>',
@@ -969,6 +991,14 @@ joint.shapes.dialogue.SetView = joint.shapes.dialogue.BaseView.extend(
 		{
 			this.model.set('value', $(evt.target).val());
 		}, this));
+
+		// Prevent paper from handling pointerdown.
+		this.$box.find('select').on('mousedown click', function (evt) { evt.stopPropagation(); });
+
+		// This is an example of reacting on the input change and storing the input data in the cell model.
+		this.$box.find('select[name="variableType"]').on('change', _.bind(function (evt) {
+			this.model.set('variableType', $(evt.target).val());
+		}, this));
 	},
 
 	updateBox: function()
@@ -977,6 +1007,11 @@ joint.shapes.dialogue.SetView = joint.shapes.dialogue.BaseView.extend(
 		var field = this.$box.find('input.value');
 		if (!field.is(':focus'))
 			field.val(this.model.get('value'));
+
+		// Example of updating the HTML with a data stored in the cell model.
+		var variableTypeField = this.$box.find('select[name="variableType"]');
+		if (!variableTypeField.is(':focus'))
+			variableTypeField.val(this.model.get('variableType'));
 	},
 });
 
@@ -1004,12 +1039,9 @@ function gameData()
 			if (node.type === 'Branch')
 			{
 				node.variable = cell.name;
+				node.variableType = cell.variableType;
 				node.branches = {};
-				for (var j = 0; j < cell.values.length; j++)
-				{
-					var branch = cell.values[j];
-					node.branches[branch] = null;
-				}
+				node.branches.conditions = [];
 			}
 			
 			else if (node.type === 'Set')
@@ -1017,7 +1049,7 @@ function gameData()
 				node.variable = cell.name;
 				node.value = cell.value;
 				node.next = null;
-                
+				node.variableType = cell.variableType;		                
 			}
 
 			else if (node.type === 'System') {
@@ -1076,7 +1108,8 @@ function gameData()
 						var sourceCell = cellsByID[source.id];
 						value = sourceCell.values[portNumber - 1];
 					}
-					source.branches[value] = target ? target.id : null;
+
+					source.branches.conditions.push({condition: value, destination: target ? target.id : null});
 				}
 				else if ((source.type === 'Text' || source.type === 'Node' || source.type === 'System' || source.type === 'Image' || source.type === 'Action' || source.type === 'Set' || source.type === 'Branch') && target && target.type === 'Choice')
 				{
@@ -1174,6 +1207,7 @@ function save()
 
 function doSave()
 {
+	console.log(gameData());
 	if (filename)
 	{
 		if (fs)
